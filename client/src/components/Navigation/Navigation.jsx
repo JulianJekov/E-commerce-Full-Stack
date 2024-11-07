@@ -4,7 +4,7 @@ import { AccountIcon } from '../common/AccountIcon'
 import { CartIcon } from '../common/CartIcon'
 import { SearchIcon } from '../common/SearchIcon'
 
-function Navigation() {
+const Navigation = () => {
   return (
     <nav className='flex items-center py-6 px-16 justify-between gap-40'>
       {/* Logo */}
