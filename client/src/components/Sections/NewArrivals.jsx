@@ -1,5 +1,5 @@
 import React from 'react'
-import SectionHeading from './SectionHeading'
+import SectionHeading from './SectionHeading/SectionHeading'
 import Card from '../Card/Card'
 import Jeans from '../../assets/imgs/jeans.jpg'
 import Shirts from '../../assets/imgs/shirts.jpg'
@@ -42,6 +42,9 @@ const NewArrivals = () => {
         draggable={false}
         showDots={false}
         infinite={false}
+        partialVisible={false}
+        itemClass={'react-slider-custom-item'}
+        className='px-8'
         >
         {items && items?.map((item,index)=> <Card key={item?.title +index} title={item.title} imagePath={item.imagePath}/>)}
         </Carousel>
