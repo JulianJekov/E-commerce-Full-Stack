@@ -3,22 +3,24 @@ import { Wishlist } from '../common/Wishlist'
 import { AccountIcon } from '../common/AccountIcon'
 import { CartIcon } from '../common/CartIcon'
 import { SearchIcon } from '../common/SearchIcon'
+import { Link, NavLink } from 'react-router-dom'
+import './Navigation.css';
 
 const Navigation = () => {
   return (
-    <nav className='flex items-center py-6 px-16 justify-between gap-40'>
+    <nav className='flex items-center py-6 px-16 justify-between gap-20 custom-nav'>
       {/* Logo */}
       <div className='flex items-center gap-6'>
-        <p className='text-3xl text-black font-bold'>Unique Ware</p>
+        <a className='text-3xl text-black font-bold gap-8' href='/'>Unique Wear</a>
       </div>
 
       {/* Nav items */}
-      <div className='flex flex-wrap items-center gap-10 flex-1'>
-        <ul className='flex gap-14 text-gray-400 '>
-          <li className='hover:text-black'><a href="/">Shop</a></li>
-          <li className='hover:text-black'><a href="/mens">Men</a></li>
-          <li className='hover:text-black'><a href="/womens">Women</a></li>
-          <li className='hover:text-black'><a href="/kids">Kids</a></li>
+      <div className='flex flex-wrap items-center gap-10'>
+        <ul className='flex gap-14 text-gray-600 hover:text-black'>
+          <li><NavLink to="/" className={({isActive}) => isActive ? 'active-link': ''}>Shop</NavLink></li>
+          <li><NavLink to="/mens" className={({isActive}) => isActive ? 'active-link': ''}>Men</NavLink></li>
+          <li><NavLink to="/womens" className={({isActive}) => isActive ? 'active-link': ''}>Women</NavLink></li>
+          <li><NavLink to="/kids" className={({isActive}) => isActive ? 'active-link': ''}>Kids</NavLink></li>
         </ul>
       </div>
 
@@ -38,7 +40,7 @@ const Navigation = () => {
         <ul className='flex items-center gap-8'>
           <li><button><Wishlist /></button></li>
           <li><button><AccountIcon /></button></li>
-          <li><a href="/cart-items"><CartIcon /></a></li>
+          <li><Link to="/cart-items"><CartIcon /></Link></li>
         </ul>
       </div>
     </nav>
