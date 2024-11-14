@@ -3,7 +3,7 @@ import { useCallback } from 'react';
 import { useState } from 'react'
 
 
-const SizeFilter = ({ size }) => {
+const SizeFilter = ({ size, hidleTitle}) => {
 
     const [appliedsize, setAppliedSize] = useState([]);
     const onClickDiv = useCallback((item) => {
@@ -16,9 +16,9 @@ const SizeFilter = ({ size }) => {
 
 
     return (
-        <div className='flex flex-col mb-4'>
-            <p className='text-[16px] text-black mt-5 mb-5'>Size</p>
-            <div className='flex flex-wrap p-4'>
+        <div className={`flex flex-col ${hidleTitle?'':'mb-4'}`}>
+            {!hidleTitle && <p className='text-[16px] text-black mt-5 mb-5'>Size</p>}
+            <div className='flex flex-wrap px-2'>
                 {size?.map(item => {
                     return (
                         <div className='flex flex-col mr-2'>

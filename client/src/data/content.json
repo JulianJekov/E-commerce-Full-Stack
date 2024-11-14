@@ -128,27 +128,27 @@
           "description":"Men's Clothing",
           "types": [
             {
-              "id": 1,
+              "type_id": 1,
               "name": "Jeans",
               "description": "Men's jeans"
             },
             {
-              "id": 2,
+              "type_id": 2,
               "name": "Shirts",
               "description": "Men's shirts"
             },
             {
-              "id": 3,
+              "type_id": 3,
               "name": "Shorts",
               "description": "Men's shorts"
             },
             {
-              "id": 4,
+              "type_id": 4,
               "name": "T-shirts",
               "description": "Men's t-shirts"
             },
             {
-              "id": 14,
+              "type_id": 14,
               "name": "Hoodie's",
               "description": "Men's Hoodie"
             }
@@ -220,7 +220,7 @@
           "id": 3,
           "name": "Kids",
           "code": "KIDS",
-          "path":"/kids",
+          "path":"/kid",
           "description":"Kids Clothing",
           "types": [
             {
@@ -264,7 +264,7 @@
         "discount": 20,
         "thumbnail": "https://codedev.b-cdn.net/products/sweatshirt-black.jpg",
         "images": ["https://codedev.b-cdn.net/products/sweatshirt-black.jpg", "https://codedev.b-cdn.net/products/woman-black-shirt-giving-neutral-flirtatious-poses.jpg","https://codedev.b-cdn.net/products/woman-holding-coffee-cup-smiling.jpg"],
-        "rating": 4.5
+        "rating": 1.5
       },
       {
         "id": 2,
