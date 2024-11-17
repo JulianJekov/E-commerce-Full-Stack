@@ -1,0 +1,13 @@
+spring:
+    application:
+        name: unique-wear
+    devtools:
+        livereload:
+            enabled: true
+        restart:
+            enabled: true
+            additional-paths:
+                - src/main/java
+            poll-interval: 500ms
+            quiet-period: 200ms
+            additional-exclude: static/**,templates/**
