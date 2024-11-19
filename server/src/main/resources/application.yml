@@ -1,4 +1,17 @@
 spring:
+    datasource:
+        url: jdbc:postgresql://localhost:5432/unique_wear
+        driver-class-name: org.postgresql.Driver
+        username: ${DB_USERNAME}
+        password: ${DB_PASSWORD}
+    jpa:
+        properties:
+            hibernate:
+                format_sql: true
+                hbm2ddl:
+                    auto: update
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+        open-in-view: false
     application:
         name: unique-wear
     devtools:
@@ -11,3 +24,17 @@ spring:
             poll-interval: 500ms
             quiet-period: 200ms
             additional-exclude: static/**,templates/**
+
+
+logging:
+    level:
+        org:
+            springframework:
+                web: debug
+                http:
+                    converter:
+                        json: debug
+            modelmapper: debug
+    #server:
+    #  servlet:
+#      context-path: /api
