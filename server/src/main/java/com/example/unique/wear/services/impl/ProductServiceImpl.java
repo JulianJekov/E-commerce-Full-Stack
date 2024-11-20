@@ -6,11 +6,14 @@ import com.example.unique.wear.model.entity.ProductResources;
 import com.example.unique.wear.model.entity.ProductVariants;
 import com.example.unique.wear.repositories.ProductRepository;
 import com.example.unique.wear.services.ProductService;
+import com.example.unique.wear.specification.ProductSpecification;
 import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -39,27 +42,34 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     @Override
-    public List<ProductDto> getAllProducts() {
-        return productRepository.findAll().stream()
+    public List<ProductDto> getAllProducts(UUID categoryId, UUID typeId) {
+        Specification<Product> spec = Specification.where(null);
+        if (categoryId != null) {
+            spec = spec.and(ProductSpecification.hasCategoryId(categoryId));
+        }
+
+        if (typeId != null) {
+            spec = spec.and(ProductSpecification.hasCategoryTypeId(typeId));
+        }
+
+        return productRepository.findAll(spec).stream()
                 .map(product -> modelMapper.map(product, ProductDto.class)).toList();
     }
 
     private List<ProductResources> getProductResources(ProductDto productDto, Product product) {
-        List<ProductResources> productResources = productDto.getProductResources()
+        return productDto.getProductResources()
                 .stream()
                 .map(pr -> modelMapper.map(pr, ProductResources.class))
                 .peek(pr -> pr.setProduct(product))
                 .toList();
-        return productResources;
     }
 
     private List<ProductVariants> getProductVariants(ProductDto productDto, Product product) {
-        List<ProductVariants> productVariants = productDto.getProductVariants()
+        return productDto.getProductVariants()
                 .stream()
                 .map(pv -> modelMapper.map(pv, ProductVariants.class))
                 .peek(pv -> pv.setProduct(product))
                 .toList();
-        return productVariants;
     }
 
 }
