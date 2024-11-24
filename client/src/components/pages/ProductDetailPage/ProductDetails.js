@@ -1,18 +1,19 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Link, useLoaderData } from 'react-router-dom'
-import Breadcrumb from '../../Breadcrumb/Breadcrumb';
-import content from '../../../data/content.json'
-import Rating from '../../Rating/Rating';
-import SizeFilter from '../../Filters/SizeFilter';
-import ProductColors from './ProductColors';
+import Breadcrumb from '../../Breadcrumb/Breadcrumb'
+import Rating from '../../Rating/Rating'
+import SizeFilter from '../../Filters/SizeFilter'
+import ProductColors from './ProductColors'
 import SvgCreditCard from '../../common/SvgCreditCard'
-import SvgCloth from '../../common/SvgCloth';
-import SvgShipping from '../../common/SvgShipping';
-import SvgReturn from '../../common/SvgReturn';
-import SectionHeading from '../../Sections/SectionHeading/SectionHeading';
-import ProductCard from '../ProductListPage/ProductCard';
+import SvgCloth from '../../common/SvgCloth'
+import SvgShipping from '../../common/SvgShipping'
+import SvgReturn from '../../common/SvgReturn'
+import SectionHeading from '../../Sections/SectionHeading/SectionHeading'
+import ProductCard from '../ProductListPage/ProductCard'
+import { useDispatch, useSelector } from 'react-redux'
+import { getAllProducts } from '../../../api/fetchProducts'
+import _ from 'lodash'
 
-const categories = content?.categories
 
 const extraSections = [
     {
@@ -35,36 +36,54 @@ const extraSections = [
 
 const ProductDetails = () => {
     const { product } = useLoaderData();
-
     const [image, setImage] = useState()
-
-    const [breadCrumbLinks, setBreadCrumbLinks] = useState([])
-
-    const similarProduct = useMemo(()=>{
-        return content?.products?.filter((item)=> item?.type_id === product?.type_id && item?.id !== product?.id)
-    },[product])
+    const [breadCrumbLinks, setBreadCrumbLink] = useState([])
+    const dispatch = useDispatch()
+    const cartItems = useSelector((state) => state.cartItems?.cart)
+    const [similarProduct, setSimilarProducts] = useState([])
+    const categories = useSelector((state) => state?.categoryState?.categories)
 
     const productCategory = useMemo(() => {
-        return categories?.find((category) => category?.id === product?.category_id)
-    }, [product])
+        return categories?.find((category) => category?.id === product?.categoryId)
+    }, [product, categories])
+
+    useEffect(()=>{
+        getAllProducts(product?.categoryId,product?.categoryTypeId).then(res=>{
+            const excludedProduct = res?.filter((item)=> item?.id !== product?.id);
+          setSimilarProducts(excludedProduct);
+        }).catch(()=>[
+          
+        ])
+      },[product?.categoryId, product?.categoryTypeId, product?.id]);
+    
 
     useEffect(() => {
-        setImage(product?.images[0]?.startsWith('http') ? product?.images[0] : product?.thumbnail)
-        setBreadCrumbLinks([])
+        setImage(product?.thumbnail);
+        setBreadCrumbLink([]);
         const arrayLinks = [{ title: 'Shop', path: '/' }, {
-            title: productCategory?.name,
-            path: productCategory?.name
-        }]
-        const productType = productCategory?.types?.find((item)=> item?.type_id === product?.type_id);
-        // const productType = productCategory?.types?.find((item) => item?.type_id === product?.type_id)
-        if (productType) {
-            arrayLinks?.push({
-                title: productType?.name,
-                path: productType?.name
-            })
+          title: productCategory?.name,
+          path: productCategory?.name
+        }];
+        const productType = productCategory?.categoryType?.find((item)=> item?.id === product?.categoryTypeId);
+        
+        if(productType){
+          arrayLinks?.push({
+            title: productType?.name,
+            path: productType?.name
+          })
         }
-        setBreadCrumbLinks(arrayLinks)
-    }, [productCategory, product])
+        setBreadCrumbLink(arrayLinks);
+      }, [productCategory, product]);
+
+    const colors = useMemo(()=>{
+        const colorSet = _.uniq(_.map(product?.productVariants, 'color'))
+        return colorSet
+    })
+
+    const size = useMemo(()=>{
+        const sizeSet = _.uniq(_.map(product?.productVariants, 'size'))
+        return sizeSet
+    })
 
     return (
         <>
@@ -76,9 +95,9 @@ const ProductDetails = () => {
                         {/* Stack images */}
                         <div className='flex flex-row md:flex-col justify-center h-full'>
                             {
-                                product?.images[0]?.startsWith('http') && product?.images?.map((item, index) => (
-                                    <button onClick={() => setImage(item)} className='w-fit p-2'>
-                                        <img src={item} className='rounded-lg h-[60px] w-[60px] bg-cover bg-center hover:scale-105'
+                                product?.productResources?.map((item, index) => (
+                                    <button key={index} onClick={() => setImage(item?.url)} className='w-fit p-2'>
+                                        <img src={item?.url} className='rounded-lg h-[60px] w-[60px] bg-cover bg-center hover:scale-105'
                                             alt={'sample-' + index}></img>
                                     </button>
                                 ))
@@ -89,14 +108,14 @@ const ProductDetails = () => {
                     <div className='w-full md:w-[65%] flex justify-center md:pt-0 pt-10'>
                         <img src={image}
                             className='h-full w-full max-h-[520px] border rounded-lg cursor-pointer object-cover'
-                            alt={product?.title} ></img>
+                            alt={product?.name} ></img>
                     </div>
                 </div>
             </div>
 
             <div className='w-[60%] px-10'>
                 <Breadcrumb links={breadCrumbLinks} />
-                <p className='text 3xl pt-2'> {product?.title} </p>
+                <p className='text 3xl pt-2'> {product?.name} </p>
                 <Rating rating={product?.rating} />
                 <p className='text-xl bold py-2'>${product?.price}</p>
                 <div className='flex flex-col py-2'>
@@ -105,10 +124,10 @@ const ProductDetails = () => {
                         <Link className='text-sm text-gray-500 hover:text-gray-900' to={'https://en.wikipedia.org/wiki/Clothing_sizes'} target='_blank'>{'Size Guide ->'}</Link>
                     </div>
                 </div>
-                <div className='mt-2'><SizeFilter size={product?.size} hidleTitle /></div>
+                <div className='mt-2'><SizeFilter size={size} hidleTitle multi={false}/></div>
                 <div>
                     <p className='text-lg bold'>Colors Available</p>
-                    <ProductColors colors={product?.color} />
+                    <ProductColors colors={colors} />
                 </div>
                 <div className='flex pt-2'>
                     <button className='bg-black rounded-lg hover:bg-gray-700'><div className='flex h-[42px] rounded-lg w-[150px] px-4 items-center justify-between bg-black text-white hover:bg-gray-700'><svg width="17" height="16" className='' viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">

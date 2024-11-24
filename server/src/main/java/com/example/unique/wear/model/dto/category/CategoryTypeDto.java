@@ -10,7 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class CategoryTypeDto {
-    private UUID categoryTypeId;
+    private UUID id;
     private String name;
     private String code;
     private String description;

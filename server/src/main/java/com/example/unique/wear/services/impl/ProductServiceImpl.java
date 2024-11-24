@@ -1,14 +1,13 @@
 package com.example.unique.wear.services.impl;
 
+import com.example.unique.wear.exceptions.ResourceNotFoundException;
+import com.example.unique.wear.mapper.ProductMapper;
 import com.example.unique.wear.model.dto.product.ProductDto;
-import com.example.unique.wear.model.entity.Product;
-import com.example.unique.wear.model.entity.ProductResources;
-import com.example.unique.wear.model.entity.ProductVariants;
+import com.example.unique.wear.model.entity.*;
 import com.example.unique.wear.repositories.ProductRepository;
 import com.example.unique.wear.services.ProductService;
 import com.example.unique.wear.specification.ProductSpecification;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
@@ -19,57 +18,77 @@ import java.util.UUID;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
-    private final ModelMapper modelMapper;
+    private final ProductMapper productMapper;
 
-    ProductServiceImpl(ProductRepository productRepository, ModelMapper modelMapper) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
-        this.modelMapper = modelMapper;
+        this.productMapper = productMapper;
     }
 
+    @Transactional
     @Override
     public ProductDto createProduct(ProductDto productDto) {
-        Product product = modelMapper.map(productDto, Product.class);
-
-        List<ProductVariants> productVariants = getProductVariants(productDto, product);
-        product.setProductVariants(productVariants);
-
-        List<ProductResources> productResources = getProductResources(productDto, product);
-        product.setProductResources(productResources);
-
+        Product product = productMapper.mapToProductEntity(productDto);
         productRepository.save(product);
-        return modelMapper.map(product, ProductDto.class);
+        return productMapper.mapProductToDto(product);
     }
 
     @Transactional
     @Override
     public List<ProductDto> getAllProducts(UUID categoryId, UUID typeId) {
-        Specification<Product> spec = Specification.where(null);
-        if (categoryId != null) {
-            spec = spec.and(ProductSpecification.hasCategoryId(categoryId));
+
+        Specification<Product> productSpecification = Specification.where(null);
+
+        if (null != categoryId) {
+            productSpecification = productSpecification.and(ProductSpecification.hasCategoryId(categoryId));
+        }
+        if (null != typeId) {
+            productSpecification = productSpecification.and(ProductSpecification.hasCategoryTypeId(typeId));
         }
 
-        if (typeId != null) {
-            spec = spec.and(ProductSpecification.hasCategoryTypeId(typeId));
+        List<Product> products = productRepository.findAll(productSpecification);
+        return productMapper.getProductDtos(products);
+    }
+
+    @Transactional
+    @Override
+    public ProductDto getProductBySlug(String slug) {
+        Product product = productRepository.findBySlug(slug);
+        if (null == product) {
+            throw new ResourceNotFoundException("Product Not Found!");
         }
-
-        return productRepository.findAll(spec).stream()
-                .map(product -> modelMapper.map(product, ProductDto.class)).toList();
+        return getProductDto(product);
     }
 
-    private List<ProductResources> getProductResources(ProductDto productDto, Product product) {
-        return productDto.getProductResources()
-                .stream()
-                .map(pr -> modelMapper.map(pr, ProductResources.class))
-                .peek(pr -> pr.setProduct(product))
-                .toList();
+    @Transactional
+    @Override
+    public ProductDto getProductById(UUID id) {
+        Product product = productRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Product Not Found!"));
+        return getProductDto(product);
     }
 
-    private List<ProductVariants> getProductVariants(ProductDto productDto, Product product) {
-        return productDto.getProductVariants()
-                .stream()
-                .map(pv -> modelMapper.map(pv, ProductVariants.class))
-                .peek(pv -> pv.setProduct(product))
-                .toList();
+    @Transactional
+    @Override
+    public ProductDto updateProduct(ProductDto productDto, UUID id) {
+        Product product = productRepository.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Product Not Found!"));
+        productDto.setId(product.getId());
+        productRepository.save(productMapper.mapToProductEntity(productDto));
+        return getProductDto(product);
     }
 
+    @Override
+    public void deleteProduct(UUID id) {
+        productRepository.deleteById(id);
+    }
+
+    private ProductDto getProductDto(Product product) {
+        ProductDto productDto = productMapper.mapProductToDto(product);
+        productDto.setCategoryId(product.getCategory().getId());
+        productDto.setCategoryTypeId(product.getCategoryType().getId());
+        productDto.setProductVariants(productMapper.mapProductVariantListToDto(product.getProductVariants()));
+        productDto.setProductResources(productMapper.mapProductResourcesListDto(product.getProductResources()));
+        return productDto;
+    }
 }

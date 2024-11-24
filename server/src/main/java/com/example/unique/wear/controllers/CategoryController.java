@@ -12,6 +12,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/category")
+@CrossOrigin
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -22,7 +23,7 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CategoryDto> getCategoryById(@PathVariable("id") UUID categoryId) {
-        CategoryDto category = categoryService.getCategory(categoryId);
+        CategoryDto category = categoryService.getCategoryDto(categoryId);
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
@@ -39,8 +40,9 @@ public class CategoryController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Category> updateCategory(@RequestBody CategoryDto categoryDto, @PathVariable(value = "id") UUID categoryId){
-        Category updatedCategory = categoryService.updateCategory(categoryDto,categoryId);
+    public ResponseEntity<CategoryDto> updateCategory(@RequestBody CategoryDto categoryDto,
+                                                      @PathVariable(value = "id") UUID categoryId){
+        CategoryDto updatedCategory = categoryService.updateCategory(categoryDto,categoryId);
         return new ResponseEntity<>(updatedCategory, HttpStatus.OK);
     }
 

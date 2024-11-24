@@ -223,8 +223,8 @@
           "path":"/kid",
           "description":"Kids Clothing",
           "types": [
-            {
-              "id": 15,
+           {
+              "id":  15,
               "name": "T-shirts",
               "description": "Kids' t-shirts"
             },

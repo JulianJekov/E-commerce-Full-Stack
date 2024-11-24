@@ -2,85 +2,93 @@ package com.example.unique.wear.services.impl;
 
 import com.example.unique.wear.exceptions.ResourceNotFoundException;
 import com.example.unique.wear.model.dto.category.CategoryDto;
+import com.example.unique.wear.model.dto.category.CategoryTypeDto;
 import com.example.unique.wear.model.entity.Category;
 import com.example.unique.wear.model.entity.CategoryType;
 import com.example.unique.wear.repositories.CategoryRepository;
 import com.example.unique.wear.services.CategoryService;
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
-    private final ModelMapper modelMapper;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository, ModelMapper modelMapper) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
-        this.modelMapper = modelMapper;
+    }
+
+    @Transactional
+    @Override
+    public CategoryDto getCategoryDto(UUID categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(
+                () -> new ResourceNotFoundException("Category with id " + categoryId + " not found"));
+        return mapToCategoryDto(category);
     }
 
     @Override
-    @Transactional
-    public CategoryDto getCategory(UUID id) {
-        Optional<Category> optionalCategory = categoryRepository.findById(id);
-        if (optionalCategory.isPresent()) {
-            return modelMapper.map(optionalCategory.get(), CategoryDto.class);
-        }
-        throw new ResourceNotFoundException("Category with id " + id + " not found");
+    public Category getCategory(UUID categoryId) {
+        return categoryRepository.findById(categoryId).orElseThrow(
+                () -> new ResourceNotFoundException("Category with id " + categoryId + " not found"));
     }
 
     @Override
     public CategoryDto createCategory(CategoryDto categoryDto) {
-        Category category = modelMapper.map(categoryDto, Category.class);
+        Category category = mapToEntity(categoryDto);
         categoryRepository.save(category);
-        return modelMapper.map(category, CategoryDto.class);
+        return mapToCategoryDto(category);
     }
 
     @Transactional
     @Override
     public List<CategoryDto> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
-        return categories.stream()
-                .map(category -> modelMapper.map(category, CategoryDto.class))
-                .collect(Collectors.toList());
+        return mapToCategoryDtos(categories);
     }
 
     @Override
-    @Transactional
-    public Category updateCategory(CategoryDto categoryDto, UUID id) {
-        //TODO: return a dto
-        Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Category with id " + id + " not found"));
+    public CategoryDto updateCategory(CategoryDto categoryDto, UUID categoryId) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found with Id " + categoryDto.getId()));
 
-        List<CategoryType> existingTypes = category.getCategoryType();
-        List<CategoryType> updatedTypes = new ArrayList<>();
+        if (null != categoryDto.getName()) {
+            category.setName(categoryDto.getName());
+        }
+        if (null != categoryDto.getCode()) {
+            category.setCode(categoryDto.getCode());
+        }
+        if (null != categoryDto.getDescription()) {
+            category.setDescription(categoryDto.getDescription());
+        }
+
+        List<CategoryType> existing = category.getCategoryType();
+        List<CategoryType> list = new ArrayList<>();
 
         if (categoryDto.getCategoryType() != null) {
             categoryDto.getCategoryType().forEach(categoryTypeDto -> {
-                CategoryType categoryType = existingTypes.stream()
-                        .filter(t -> t.getId() != null && t.getId().equals(categoryTypeDto.getCategoryTypeId()))
-                        .findFirst()
-                        .orElseGet(() -> existingTypes.stream()
-                                .filter(t -> t.getName().equals(categoryTypeDto.getName()) ||
-                                        t.getDescription().equals(categoryTypeDto.getDescription()) ||
-                                        t.getCode().equals(categoryTypeDto.getCode()))
-                                .findFirst()
-                                .orElse(new CategoryType()));
-
-                modelMapper.map(categoryTypeDto, categoryType);
-                categoryType.setCategory(category);
-                updatedTypes.add(categoryType);
+                if (null != categoryTypeDto.getId()) {
+                    Optional<CategoryType> categoryType = existing.stream().filter(t -> t.getId().equals(categoryTypeDto.getId())).findFirst();
+                    CategoryType categoryType1 = categoryType.get();
+                    categoryType1.setCode(categoryTypeDto.getCode());
+                    categoryType1.setName(categoryTypeDto.getName());
+                    categoryType1.setDescription(categoryTypeDto.getDescription());
+                    list.add(categoryType1);
+                } else {
+                    CategoryType categoryType = new CategoryType();
+                    categoryType.setCode(categoryTypeDto.getCode());
+                    categoryType.setName(categoryTypeDto.getName());
+                    categoryType.setDescription(categoryTypeDto.getDescription());
+                    categoryType.setCategory(category);
+                    list.add(categoryType);
+                }
             });
         }
-
-        category.setCategoryType(updatedTypes);
-        modelMapper.map(categoryDto, category);
-        return categoryRepository.save(category);
+        category.setCategoryType(list);
+        Category updatedCategory = categoryRepository.save(category);
+        return mapToCategoryDto(updatedCategory);
     }
 
     @Override
@@ -89,4 +97,64 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
 
+    private Category mapToEntity(CategoryDto categoryDto) {
+        Category category = Category.builder()
+                .code(categoryDto.getCode())
+                .name(categoryDto.getName())
+                .description(categoryDto.getDescription())
+                .build();
+
+        if (null != categoryDto.getCategoryType()) {
+            List<CategoryType> categoryTypes = mapToCategoryTypesList(categoryDto.getCategoryType(), category);
+            category.setCategoryType(categoryTypes);
+        }
+
+        return category;
+    }
+
+    private List<CategoryType> mapToCategoryTypesList(List<CategoryTypeDto> categoryTypeList, Category category) {
+        return categoryTypeList.stream().map(categoryTypeDto -> {
+            CategoryType categoryType = new CategoryType();
+            categoryType.setCode(categoryTypeDto.getCode());
+            categoryType.setName(categoryTypeDto.getName());
+            categoryType.setDescription(categoryTypeDto.getDescription());
+            categoryType.setCategory(category);
+            return categoryType;
+        }).toList();
+    }
+
+    private static List<CategoryDto> mapToCategoryDtos(List<Category> categories) {
+        List<CategoryDto> categoryDtos = new ArrayList<>();
+        for (Category category : categories) {
+            CategoryDto categoryDto = new CategoryDto();
+            categoryDto.setId(category.getId());
+            categoryDto.setName(category.getName());
+            categoryDto.setDescription(category.getDescription());
+            categoryDto.setCode(category.getCode());
+            categoryDto.setCategoryType(getCategoryType(category));
+            categoryDtos.add(categoryDto);
+        }
+        return categoryDtos;
+    }
+
+    private static List<CategoryTypeDto> getCategoryType(Category category) {
+        return category.getCategoryType().stream().map(categoryType -> {
+            CategoryTypeDto categoryTypeDto = new CategoryTypeDto();
+            categoryTypeDto.setId(categoryType.getId());
+            categoryTypeDto.setName(categoryType.getName());
+            categoryTypeDto.setDescription(categoryType.getDescription());
+            categoryTypeDto.setCode(categoryType.getCode());
+            return categoryTypeDto;
+        }).toList();
+    }
+
+    private CategoryDto mapToCategoryDto(Category category) {
+        CategoryDto categoryDto = new CategoryDto();
+        categoryDto.setId(category.getId());
+        categoryDto.setName(category.getName());
+        categoryDto.setDescription(category.getDescription());
+        categoryDto.setCode(category.getCode());
+        categoryDto.setCategoryType(getCategoryType(category));
+        return categoryDto;
+    }
 }
