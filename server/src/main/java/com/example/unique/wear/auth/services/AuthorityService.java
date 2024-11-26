@@ -5,6 +5,7 @@ import com.example.unique.wear.auth.repositories.AuthorityRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -17,10 +18,13 @@ public class AuthorityService {
     }
 
     public List<Authority> getUserAuthority() {
-        List<Authority> authorities = new ArrayList<>();
         Authority authority = authorityRepository.findByRoleCode("USER");
-        authorities.add(authority);
-        return authorities;
+        if (authority == null) {
+            throw new RuntimeException("Authority with role 'USER' not found.");
+        }
+
+        return Collections.singletonList(authorityRepository.save(authority));
+
     }
 
     public Authority createAuthority(String roleCode, String description) {

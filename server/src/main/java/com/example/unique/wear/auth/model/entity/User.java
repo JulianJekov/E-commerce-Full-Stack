@@ -40,7 +40,7 @@ public class User implements UserDetails {
 
     private String verificationCode;
 
-    private boolean enabled = false;
+    private boolean enabled;
 
     private Date createdOn;
 

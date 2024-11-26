@@ -14,16 +14,20 @@ spring:
         open-in-view: false
     application:
         name: unique-wear
-#    devtools:
-#        livereload:
-#            enabled: true
-#        restart:
-#            enabled: true
-#            additional-paths:
-#                - src/main/java
-#            poll-interval: 500ms
-#            quiet-period: 200ms
-#            additional-exclude: static/**,templates/**
+    mail:
+        host: smtp.gmail.com
+        port: 587
+        username: ${EMAIL_USERNAME}
+        password: ${EMAIL_PASSWORD}
+        properties:
+          mail.smtp.auth: true
+          mail.smtp.starttls.enable: true
+jwt:
+    auth:
+        app: authApp
+        secret_key: ${JWT_KEY}
+        expires_id: 3600
+
 
 
 logging:
@@ -35,6 +39,17 @@ logging:
                     converter:
                         json: debug
             modelmapper: debug
-    #server:
-    #  servlet:
+#server:
+#  servlet:
 #      context-path: /api
+
+#    devtools:
+#        livereload:
+#            enabled: true
+#        restart:
+#            enabled: true
+#            additional-paths:
+#                - src/main/java
+#            poll-interval: 500ms
+#            quiet-period: 200ms
+#            additional-exclude: static/**,templates/**
