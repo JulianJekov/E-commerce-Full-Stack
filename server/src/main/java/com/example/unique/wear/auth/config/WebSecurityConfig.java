@@ -16,6 +16,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
@@ -33,12 +34,26 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration corsConfiguration = new CorsConfiguration();
+                    corsConfiguration.setAllowCredentials(true);
+                    corsConfiguration.addAllowedOrigin("http://localhost:3000");
+                    corsConfiguration.addAllowedHeader("*");
+                    corsConfiguration.addAllowedMethod("*");
+                    return corsConfiguration;
+                }))
                 .authorizeHttpRequests(authorize -> {
                     authorize
-                            .requestMatchers(HttpMethod.GET, "/api/products", "/api/category/").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/api/products", "/api/category/all").permitAll()
                             .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                             .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                            .requestMatchers("/oauth2/success").permitAll()
                             .anyRequest().authenticated();
+                })
+                .oauth2Login(oAuth2Login -> {
+                    oAuth2Login
+                            .defaultSuccessUrl("/oauth2/success")
+                            .loginPage("/oauth2/authorization/google");
                 })
                 .addFilterBefore(new JWTAuthenticationFilter(userDetailsService, jwtTokenHelper),
                         UsernamePasswordAuthenticationFilter.class);

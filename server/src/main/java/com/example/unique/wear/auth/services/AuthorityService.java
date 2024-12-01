@@ -4,7 +4,6 @@ import com.example.unique.wear.auth.model.entity.Authority;
 import com.example.unique.wear.auth.repositories.AuthorityRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class AuthorityService {
             throw new RuntimeException("Authority with role 'USER' not found.");
         }
 
-        return Collections.singletonList(authorityRepository.save(authority));
+        return Collections.singletonList(authority);
 
     }
 

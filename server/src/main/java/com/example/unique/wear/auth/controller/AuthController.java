@@ -9,21 +9,17 @@ import com.example.unique.wear.auth.model.entity.User;
 import com.example.unique.wear.auth.services.RegistrationService;
 import com.example.unique.wear.auth.services.VerificationService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -45,6 +41,7 @@ public class AuthController {
         this.verificationService = verificationService;
         this.jwtTokenHelper = jwtTokenHelper;
     }
+
 
     @PostMapping("/login")
     public ResponseEntity<UserToken> login(@RequestBody LoginRequest loginRequest) {
