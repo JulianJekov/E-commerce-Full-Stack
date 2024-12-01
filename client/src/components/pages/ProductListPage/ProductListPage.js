@@ -11,7 +11,6 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setLoading } from '../../../store/features/common'
 
 const categories = content?.categories;
-const products = content?.products;
 
 const ProductListPage = ({ categoryType }) => {
 
@@ -22,10 +21,6 @@ const ProductListPage = ({ categoryType }) => {
     const categoryContent = useMemo(() => {
         return categories?.find((category) => category.code === categoryType)
     }, [categoryType])
-
-    const productListItems = useMemo(() => {
-        return content?.products?.filter((product) => product?.category_id === categoryContent?.id)
-    }, [categoryContent])
 
     const category = useMemo(()=> {
         return categoryData?.find(element => element?.code === categoryType)
