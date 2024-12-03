@@ -83,6 +83,11 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
     }
 
+    @Override
+    public Product fetchProductById(UUID productId) {
+        return productRepository.findById(productId).orElseThrow(ResourceNotFoundException::new);
+    }
+
     private ProductDto getProductDto(Product product) {
         ProductDto productDto = productMapper.mapProductToDto(product);
         productDto.setCategoryId(product.getCategory().getId());
