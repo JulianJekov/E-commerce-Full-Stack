@@ -1,35 +1,37 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { useCallback } from 'react';
 import { useState } from 'react'
 
 
-const SizeFilter = ({ size, hidleTitle, multi=true}) => {
+const SizeFilter = ({ size, hideTitle, multi=true, onChange}) => {
 
-    const [appliedsize, setAppliedSize] = useState([]);
+    const [appliedSize, setAppliedSize] = useState([]);
     const onClickDiv = useCallback((item) => {
-        if (appliedsize.indexOf(item) > -1) {
-            setAppliedSize(appliedsize?.filter(size => size !== item))
+        if (appliedSize.indexOf(item) > -1) {
+            setAppliedSize(appliedSize?.filter(size => size !== item))
         } else {
             if(multi){
-                setAppliedSize([...appliedsize,item])
+                setAppliedSize([...appliedSize,item])
             }else{
                 setAppliedSize([item])
             }
-            
         }
-    }, [appliedsize, setAppliedSize])
+    }, [appliedSize, setAppliedSize])
 
+    useEffect(()=>{
+        onChange && onChange(appliedSize);
+    },[appliedSize, onChange])
 
     return (
-        <div className={`flex flex-col ${hidleTitle?'':'mb-4'}`}>
-            {!hidleTitle && <p className='text-[16px] text-black mt-5 mb-5'>Size</p>}
+        <div className={`flex flex-col ${hideTitle?'':'mb-4'}`}>
+            {!hideTitle && <p className='text-[16px] text-black mt-5 mb-5'>Size</p>}
             <div className='flex flex-wrap px-2'>
                 {size?.map(item => {
                     return (
                         <div className='flex flex-col mr-2'>
                             <div className='w-[50px] h-8 text-center border rounded-lg mr-4 mb-4 pt-0.5 cursor-pointer 
                             hover:scale-105 bg-white border-gray-500 text-gray-500'
-                            style={appliedsize.includes(item)?{background:'black', color:'white'}:{}}
+                            style={appliedSize.includes(item)?{background:'black', color:'white'}:{}}
                             onClick={() => onClickDiv(item)}>
                                 {item}
                             </div>

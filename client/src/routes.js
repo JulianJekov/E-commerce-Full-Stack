@@ -8,6 +8,8 @@ import AuthenticationWrapper from "./components/pages/AuthenticationWrapper";
 import Login from "./components/pages/Login/Login";
 import Register from "./components/pages/Register/Register";
 import OAuth2LoginCallback from "./components/pages/OAuth2LoginCallback";
+import Cart from "./components/pages/Cart/Cart";
+
 
 export const router = createBrowserRouter([
     {
@@ -34,6 +36,10 @@ export const router = createBrowserRouter([
                 path: "/product/:slug",
                 loader: loadProductBySlug,
                 element: <ProductDetails />
+            },
+            {
+                path: "/cart-items",
+                element: <Cart />
             }
         ]
     },
