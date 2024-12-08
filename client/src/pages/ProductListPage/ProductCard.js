@@ -1,5 +1,5 @@
 import React from 'react'
-import SvgFavourite from '../../../components/common/SvgFavourites'
+import SvgFavourite from '../../components/common/SvgFavourites'
 import { Link } from 'react-router-dom'
 
 

@@ -1,67 +1,88 @@
-import { createBrowserRouter } from "react-router-dom";
+import {createBrowserRouter} from "react-router-dom";
 import Shop from "./Shop";
-import ProductListPage from "./components/pages/ProductListPage/ProductListPage";
-import ShopApplicationWrapper from "./components/pages/ShopApplicationWrapper";
-import ProductDetails from "./components/pages/ProductDetailPage/ProductDetails";
-import { loadProductBySlug } from "./routes/products";
-import AuthenticationWrapper from "./components/pages/AuthenticationWrapper";
-import Login from "./components/pages/Login/Login";
-import Register from "./components/pages/Register/Register";
-import OAuth2LoginCallback from "./components/pages/OAuth2LoginCallback";
-import Cart from "./components/pages/Cart/Cart";
+import ProductListPage from "./pages/ProductListPage/ProductListPage";
+import ShopApplicationWrapper from "./pages/ShopApplicationWrapper";
+import ProductDetails from "./pages/ProductDetailPage/ProductDetails";
+import {loadProductBySlug} from "./routes/products";
+import AuthenticationWrapper from "./pages/AuthenticationWrapper";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
+import OAuth2LoginCallback from "./pages/OAuth2LoginCallback";
+import Cart from "./pages/Cart/Cart";
+import Account from "./pages/Account/Account";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import Checkout from "./pages/Checkout/Checkout";
+import ConfirmPayment from "./pages/ConfirmPayment/ConfirmPayment";
+import OrderConfirmed from "./pages/OrderConfirmed/OrderConfirmt";
 
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <ShopApplicationWrapper />,
+        element: <ShopApplicationWrapper/>,
         children: [
             {
                 path: "/",
-                element: <Shop />
+                element: <Shop/>
             },
             {
                 path: "/women",
-                element: <ProductListPage categoryType={'WOMEN'} />
+                element: <ProductListPage categoryType={'WOMEN'}/>
             },
             {
                 path: "/men",
-                element: <ProductListPage categoryType={'MEN'} />
+                element: <ProductListPage categoryType={'MEN'}/>
             },
             {
                 path: "/kid",
-                element: <ProductListPage categoryType={'KIDS'} />
+                element: <ProductListPage categoryType={'KIDS'}/>
             },
             {
                 path: "/product/:slug",
                 loader: loadProductBySlug,
-                element: <ProductDetails />
+                element: <ProductDetails/>
             },
             {
                 path: "/cart-items",
-                element: <Cart />
+                element: <Cart/>
+            },
+            {
+                path: "/account-details",
+                element: <ProtectedRoute> <Account/> </ProtectedRoute>
+            },
+            {
+                path:'/checkout',
+                element:<ProtectedRoute><Checkout /></ProtectedRoute>
+            },
+            {
+                path:'/orderConfirmed',
+                element: <OrderConfirmed />
             }
         ]
     },
     {
         path: "/v1/",
-        element: <AuthenticationWrapper />,
-        children:[
+        element: <AuthenticationWrapper/>,
+        children: [
             {
                 path: "login",
-                element: <Login />
+                element: <Login/>
 
             },
             {
                 path: "register",
-                element: <Register />
+                element: <Register/>
 
             }
         ]
     },
     {
         path: "/oauth2/callback",
-        element:<OAuth2LoginCallback />
+        element: <OAuth2LoginCallback/>
+    },
+    {
+        path:'/confirmPayment',
+        element:<ConfirmPayment />
     }
 
 ])

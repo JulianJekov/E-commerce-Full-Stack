@@ -3,12 +3,13 @@ import {Wishlist} from '../common/Wishlist'
 import {AccountIcon} from '../common/AccountIcon'
 import {CartIcon} from '../common/CartIcon'
 import {SearchIcon} from '../common/SearchIcon'
-import {Link, NavLink} from 'react-router-dom'
+import {Link, NavLink, useNavigate} from 'react-router-dom'
 import './Navigation.css';
 import {countCartItems} from "../../store/features/cart";
 import {useSelector} from "react-redux";
 
 const Navigation = ({variant = "default"}) => {
+    const navigate = useNavigate();
     const cartLength = useSelector(countCartItems)
     return (
         <nav className='flex items-center py-6 px-16 justify-between gap-20 custom-nav'>
@@ -51,7 +52,7 @@ const Navigation = ({variant = "default"}) => {
                         <button><Wishlist/></button>
                     </li>
                     <li>
-                        <button><AccountIcon/></button>
+                        <button onClick={() => navigate('/account-details')}><AccountIcon/></button>
                     </li>
                     <li>
                         <Link to="/cart-items" className='flex flex-wrap'><CartIcon/>

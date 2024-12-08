@@ -1,14 +1,14 @@
 import React, {useCallback, useMemo, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {selectCartItems} from "../../../store/features/cart";
-import {deleteItemFromCartAction, updateItemToCartAction} from "../../../store/actions/cartAction";
-import {isTokenValid} from "../../../utils/jwt-helper";
-import {NumberInput} from '../../NumberInput/NumberInput';
-import DeleteIcon from "../../common/DeleteIcon";
+import {selectCartItems} from "../../store/features/cart";
+import {deleteItemFromCartAction, updateItemToCartAction} from "../../store/actions/cartAction";
+import {isTokenValid} from "../../utils/jwt-helper";
+import {NumberInput} from '../../components/NumberInput/NumberInput';
+import DeleteIcon from "../../components/common/DeleteIcon";
 import {Link, useNavigate} from "react-router-dom";
 import EmptyCart from "../../../assets/imgs/empty_cart.png"
 import Modal from 'react-modal';
-import {customStyles} from "../../../styles/modal";
+import {customStyles} from "../../styles/modal";
 
 const headers = [
     "Product Details", "Price", "Quantity", "Shipping", "SubTotal", "Action"
@@ -99,7 +99,7 @@ function Cart() {
                                             </td>
 
                                             <td>
-                                                <NumberInput max={2} quantity={item?.quantity}
+                                                <NumberInput max={20} quantity={item?.quantity}
                                                              onChangeQuantity={(value) => onChangeQuantity(value, item?.productId, item?.variant?.id)}/>
                                             </td>
 
@@ -108,7 +108,7 @@ function Cart() {
                                             </td>
 
                                             <td>
-                                                <p className='text-center text-sm text-gray-600'>${item?.subTotal}</p>
+                                                <p className='text-center text-sm text-gray-600'>${(item?.subTotal).toFixed(2)}</p>
                                             </td>
 
                                             <td>
@@ -135,14 +135,18 @@ function Cart() {
                                 </form>
                             </div>
                             <div className='mr-20 pr-8'>
-                                <div className='flex gap-8 text-lg'><p className='w-[120px]'>SubTotal</p>
+                                <div className='flex gap-8 text-lg'>
+                                    <p className='w-[120px]'>SubTotal</p>
                                     <p>${subTotal}</p></div>
-                                <div className='flex gap-8 text-lg mt-2'><p className='w-[120px]'>Shipping</p>
+                                <div className='flex gap-8 text-lg mt-2'>
+                                    <p className='w-[120px]'>Shipping</p>
                                     <p>${0}</p></div>
-                                <div className='flex gap-8 text-lg mt-2 font-bold'><p className='w-[120px]'>Grand
-                                    Total</p> <p>${subTotal}</p></div>
+                                <div className='flex gap-8 text-lg mt-2 font-bold'>
+                                    <p className='w-[120px]'>Grand Total</p>
+                                    <p>${subTotal}</p></div>
                                 <hr className='h-[2px] bg-slate-400 mt-2'></hr>
-                                {isLoggedIn && <button
+                                {isLoggedIn &&
+                                    <button
                                     className='w-full items-center h-[48px] bg-black border rounded-lg mt-2 text-white hover:bg-gray-800'
                                     onClick={() => navigate("/checkout")}>Checkout</button>}
                                 {!isLoggedIn && <div className='p-4'><Link to={"/v1/login"}
@@ -157,9 +161,11 @@ function Cart() {
                         <div className='flex justify-center'><img src={EmptyCart} className='w-[240px] h-[240px '
                                                                   alt='empty-cart'/></div>
                         <p className='text-3xl font-bold'>Your cart is empty</p>
-                        <div className='p-4'><Link to={"/"}
-                                                   className='w-full p-2 items-center h-[48px] bg-black border rounded-lg mt-2 text-white hover:bg-gray-800'>Continue
-                            Shopping</Link></div>
+                        <div className='p-4'>
+                            <Link to={"/"}
+                            className='w-full p-2 items-center h-[48px] bg-black border rounded-lg mt-2 text-white hover:bg-gray-800'>
+                            Continue Shopping</Link>
+                        </div>
                     </div>
                 }
             </div>

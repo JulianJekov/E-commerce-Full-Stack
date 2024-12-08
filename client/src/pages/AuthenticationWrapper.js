@@ -1,9 +1,9 @@
 import React from 'react'
-import Navigation from '../../components/Navigation/Navigation'
+import Navigation from '../components/Navigation/Navigation'
 import { Outlet } from 'react-router-dom'
 import BackGroundImage from '../../assets/imgs/bg-1.png'
 import { useSelector } from 'react-redux';
-import Spinner from '../../components/Spinner/Spinner';
+import Spinner from '../components/Spinner/Spinner';
 
 const AuthenticationWrapper = () => {
 

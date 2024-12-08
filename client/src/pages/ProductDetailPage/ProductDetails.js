@@ -1,19 +1,19 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react'
 import {Link, useLoaderData} from 'react-router-dom'
-import Breadcrumb from '../../Breadcrumb/Breadcrumb'
-import Rating from '../../Rating/Rating'
-import SizeFilter from '../../Filters/SizeFilter'
+import Breadcrumb from '../../components/Breadcrumb/Breadcrumb'
+import Rating from '../../components/Rating/Rating'
+import SizeFilter from '../../components/Filters/SizeFilter'
 import ProductColors from './ProductColors'
-import SvgCreditCard from '../../common/SvgCreditCard'
-import SvgCloth from '../../common/SvgCloth'
-import SvgShipping from '../../common/SvgShipping'
-import SvgReturn from '../../common/SvgReturn'
-import SectionHeading from '../../Sections/SectionHeading/SectionHeading'
+import SvgCreditCard from '../../components/common/SvgCreditCard'
+import SvgCloth from '../../components/common/SvgCloth'
+import SvgShipping from '../../components/common/SvgShipping'
+import SvgReturn from '../../components/common/SvgReturn'
+import SectionHeading from '../../components/Sections/SectionHeading/SectionHeading'
 import ProductCard from '../ProductListPage/ProductCard'
 import {useDispatch, useSelector} from 'react-redux'
-import {getAllProducts} from '../../../api/fetchProducts'
+import {getAllProducts} from '../../api/fetchProducts'
 import _ from 'lodash'
-import {addItemToCartAction} from "../../../store/actions/cartAction";
+import {addItemToCartAction} from "../../store/actions/cartAction";
 
 
 const extraSections = [

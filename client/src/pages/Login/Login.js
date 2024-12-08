@@ -1,10 +1,10 @@
 import React, {useCallback, useState} from 'react'
-import GoogleSignIn from '../../../components/GoogleButton/GoogleSignIn'
+import GoogleSignIn from '../../components/GoogleButton/GoogleSignIn'
 import {Link, useNavigate} from 'react-router-dom'
 import {useDispatch} from 'react-redux';
-import {setLoading} from '../../../store/features/common'
-import {loginAPI} from '../../../api/authentication';
-import { saveToken } from '../../../utils/jwt-helper';
+import {setLoading} from '../../store/features/common'
+import {loginAPI} from '../../api/authentication';
+import { saveToken } from '../../utils/jwt-helper';
 const Login = () => {
     const [values, setValues] = useState({
         username: '',

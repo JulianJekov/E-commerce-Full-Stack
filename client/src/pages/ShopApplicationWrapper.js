@@ -1,7 +1,7 @@
 import React from 'react'
-import Navigation from '../Navigation/Navigation'
+import Navigation from '../components/Navigation/Navigation'
 import { Outlet } from 'react-router-dom'
-import Spinner from '../Spinner/Spinner'
+import Spinner from '../components/Spinner/Spinner'
 import { useSelector } from 'react-redux'
 
 const ShopApplicationWrapper = () => {

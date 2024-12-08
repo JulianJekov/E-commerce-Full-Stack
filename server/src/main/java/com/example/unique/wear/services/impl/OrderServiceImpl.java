@@ -1,6 +1,7 @@
 package com.example.unique.wear.services.impl;
 
 import com.example.unique.wear.auth.model.entity.User;
+import com.example.unique.wear.auth.util.PaymentIntentService;
 import com.example.unique.wear.model.dto.order.OrderRequestDto;
 import com.example.unique.wear.model.dto.order.OrderResponseDto;
 import com.example.unique.wear.model.entity.*;
@@ -9,14 +10,15 @@ import com.example.unique.wear.model.enums.PaymentStatus;
 import com.example.unique.wear.repositories.OrderRepository;
 import com.example.unique.wear.services.OrderService;
 import com.example.unique.wear.services.ProductService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import jakarta.transaction.Transactional;
 import org.apache.coyote.BadRequestException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -24,19 +26,21 @@ public class OrderServiceImpl implements OrderService {
     private final UserDetailsService userDetailsService;
     private final ProductService productService;
     private final OrderRepository orderRepository;
+    private final PaymentIntentService paymentIntentService;
 
     public OrderServiceImpl(UserDetailsService userDetailsService,
                             ProductService productService,
-                            OrderRepository orderRepository) {
+                            OrderRepository orderRepository, PaymentIntentService paymentIntentService) {
         this.userDetailsService = userDetailsService;
         this.productService = productService;
         this.orderRepository = orderRepository;
+        this.paymentIntentService = paymentIntentService;
     }
 
     @Transactional
     @Override
     public OrderResponseDto createOrder(OrderRequestDto orderRequestDto,
-                                        Principal principal) throws BadRequestException {
+                                        Principal principal) throws BadRequestException, StripeException {
         //TODO: validate dtos
         //TODO: make a user service to get a user
         User user = (User) userDetailsService.loadUserByUsername(principal.getName());
@@ -52,14 +56,55 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        return OrderResponseDto.builder()
+        OrderResponseDto orderResponseDto = OrderResponseDto.builder()
                 .paymentMethod(orderRequestDto.getPaymentMethod())
                 .orderId(savedOrder.getId())
                 .build();
 
-        //        if (Objects.equals(orderRequestDto.getPaymentMethod(), "CARD")) {
-//            orderResponse.setCredentials(paymentIntentService.createPaymentIntent(order));
-//        }
+        if (Objects.equals(orderRequestDto.getPaymentMethod(), "CARD")) {
+            orderResponseDto.setCredentials(paymentIntentService.createPaymentIntent(order));
+        }
+        return orderResponseDto;
+    }
+
+    @Override
+    public Map<String, String> updateStatus(String paymentIntentId, String status) {
+        try{
+            PaymentIntent paymentIntent= PaymentIntent.retrieve(paymentIntentId);
+            if (paymentIntent != null && paymentIntent.getStatus().equals("succeeded")) {
+                String orderId = paymentIntent.getMetadata().get("orderId") ;
+
+                Order order= orderRepository.findById(UUID.fromString(orderId))
+                        .orElseThrow(BadRequestException::new);
+                Payment payment = getPayment(order, paymentIntent);
+
+                setOrder(order, paymentIntent, payment);
+                Order savedOrder = orderRepository.save(order);
+
+                Map<String,String> map = new HashMap<>();
+                map.put("orderId", String.valueOf(savedOrder.getId()));
+                return map;
+            }
+            else{
+                throw new IllegalArgumentException("PaymentIntent not found or missing metadata");
+            }
+        }
+        catch (Exception e){
+            throw new IllegalArgumentException("PaymentIntent not found or missing metadata");
+        }
+    }
+
+    private static void setOrder(Order order, PaymentIntent paymentIntent, Payment payment) {
+        order.setPaymentMethod(paymentIntent.getPaymentMethod());
+        order.setOrderStatus(OrderStatus.IN_PROGRESS);
+        order.setPayment(payment);
+    }
+
+    private static Payment getPayment(Order order, PaymentIntent paymentIntent) {
+        Payment payment = order.getPayment();
+        payment.setPaymentStatus(PaymentStatus.COMPLETED);
+        payment.setPaymentMethod(paymentIntent.getPaymentMethod());
+        return payment;
     }
 
     private static Payment createPayment(Order order) {
