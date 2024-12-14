@@ -8,6 +8,7 @@ import PaymentPage from "../PaymentPage/PaymentPage";
 
 
 const Checkout = () => {
+    debugger
     const cartItems = useSelector(selectCartItems);
     const dispatch = useDispatch();
     const [userInfo,setUserInfo] = useState([]);

@@ -35,6 +35,8 @@ const CheckoutForm = ({userId,addressId}) => {
 
 
         if(elements){
+
+
             placeOrderAPI(orderRequest).then(async res=>{
                 setOrderResponse(res);
                 stripe.confirmPayment({

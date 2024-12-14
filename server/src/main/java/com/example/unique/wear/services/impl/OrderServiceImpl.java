@@ -119,7 +119,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     private List<OrderItem> getOrderItems(OrderRequestDto orderRequestDto, Order order) {
-        return orderRequestDto.getOrderItemDtos().stream().map(orderItemRequest -> {
+        return orderRequestDto.getOrderItemRequests().stream().map(orderItemRequest -> {
             try {
                 Product product = productService.fetchProductById(orderItemRequest.getProductId());
                 return OrderItem.builder()

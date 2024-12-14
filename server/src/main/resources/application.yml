@@ -44,7 +44,9 @@ jwt:
         secret_key: ${JWT_KEY}
         expires_id: 3600
 
-
+stripe:
+    secret:
+        key: "${STRIPE_KEY}"
 
 
 logging:

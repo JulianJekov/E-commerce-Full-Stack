@@ -4,6 +4,7 @@ import com.example.unique.wear.model.entity.Order;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.param.PaymentIntentCreateParams;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -13,11 +14,10 @@ import java.util.Map;
 public class PaymentIntentService {
 
     public Map<String, String> createPaymentIntent(Order order) throws StripeException {
-        String id = order.getUser().getId().toString();
         Map<String, String> metaData = new HashMap<>();
-        metaData.put("orderId", id);
+        metaData.put("orderId", order.getId().toString());
         PaymentIntentCreateParams paymentIntentCreateParams = PaymentIntentCreateParams.builder()
-                .setAmount(10L)
+                .setAmount(100L)
                 .setCurrency("USD")
                 .putAllMetadata(metaData)
                 .setAutomaticPaymentMethods(

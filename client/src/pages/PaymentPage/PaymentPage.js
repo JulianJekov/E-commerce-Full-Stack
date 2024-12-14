@@ -2,12 +2,12 @@ import { Elements } from '@stripe/react-stripe-js';
 import CheckoutForm from './CheckoutPayment';
 import { loadStripe } from '@stripe/stripe-js';
 
-
-const stripePublishableKey = process.env.STRIPE_KEY || '';
+const stripePublishableKey = process.env.REACT_APP_STRIPE_PUBLISHABLE_KEY || '';
 //Publishable Key
 const stripePromise = loadStripe(stripePublishableKey);
 
 const PaymentPage = (props) => {
+    console.log(props)
 
     const options = {
         mode: 'payment',

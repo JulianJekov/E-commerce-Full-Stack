@@ -6,7 +6,7 @@ import {isTokenValid} from "../../utils/jwt-helper";
 import {NumberInput} from '../../components/NumberInput/NumberInput';
 import DeleteIcon from "../../components/common/DeleteIcon";
 import {Link, useNavigate} from "react-router-dom";
-import EmptyCart from "../../../assets/imgs/empty_cart.png"
+import EmptyCart from "../../assets/imgs/empty_cart.png"
 import Modal from 'react-modal';
 import {customStyles} from "../../styles/modal";
 
@@ -58,8 +58,8 @@ function Cart() {
     const isLoggedIn = useMemo(() => {
         return isTokenValid();
     }, [])
-    console.log("isLoggedIn ", isLoggedIn, isTokenValid());
 
+    console.log(cartItems)
     return (
         <>
             <div className='p-4'>

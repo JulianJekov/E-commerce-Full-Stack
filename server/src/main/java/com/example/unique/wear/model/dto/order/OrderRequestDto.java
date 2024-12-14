@@ -17,7 +17,7 @@ public class OrderRequestDto {
     private UUID userId;
     private Date orderDate;
     private UUID addressId;
-    private List<OrderItemDto> orderItemDtos;
+    private List<OrderItemDto> orderItemRequests;
     private Double totalAmount;
     private Double discount;
     private String paymentMethod;

@@ -1,9 +1,9 @@
 import React, {useCallback, useState} from 'react'
-import GoogleSignIn from '../../../components/GoogleButton/GoogleSignIn';
+import GoogleSignIn from '../../components/GoogleButton/GoogleSignIn';
 import {Link} from 'react-router-dom';
-import {setLoading} from '../../../store/features/common';
+import {setLoading} from '../../store/features/common';
 import {useDispatch} from 'react-redux';
-import {registerAPI} from '../../../api/authentication';
+import {registerAPI} from '../../api/authentication';
 import VerifyCode from './VerifyCode';
 
 const Register = () => {
