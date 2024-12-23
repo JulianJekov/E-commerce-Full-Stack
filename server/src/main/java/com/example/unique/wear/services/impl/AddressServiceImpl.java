@@ -5,10 +5,12 @@ import com.example.unique.wear.model.dto.address.AddressDto;
 import com.example.unique.wear.model.entity.Address;
 import com.example.unique.wear.repositories.AddressRepository;
 import com.example.unique.wear.services.AddressService;
+import jakarta.transaction.Transactional;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.UUID;
 
 @Service
 public class AddressServiceImpl implements AddressService {
@@ -35,5 +37,11 @@ public class AddressServiceImpl implements AddressService {
                 .user(user)
                 .build();
         return addressRepository.save(address);
+    }
+
+    @Transactional
+    @Override
+    public void deleteAddress(UUID id) {
+        addressRepository.deleteById(id);
     }
 }

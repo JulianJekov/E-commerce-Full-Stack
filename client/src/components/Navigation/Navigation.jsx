@@ -52,7 +52,7 @@ const Navigation = ({variant = "default"}) => {
                         <button><Wishlist/></button>
                     </li>
                     <li>
-                        <button onClick={() => navigate('/account-details')}><AccountIcon/></button>
+                        <button onClick={() => navigate('/account-details/profile')}><AccountIcon/></button>
                     </li>
                     <li>
                         <Link to="/cart-items" className='flex flex-wrap'><CartIcon/>

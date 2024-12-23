@@ -15,7 +15,7 @@ export const fetchUserDetails = async () => {
 }
 
 export const addAddressAPI = async (data) => {
-    const url = API_BASE_URL + '/api/address';
+    const url = API_BASE_URL + '/api/address/create';
     try {
         const response = await axios(url, {
             method: "POST",
@@ -29,7 +29,7 @@ export const addAddressAPI = async (data) => {
 }
 
 export const deleteAddressAPI = async (id) => {
-    const url = API_BASE_URL + `/api/address/${id}`;
+    const url = API_BASE_URL + `/api/address/delete/${id}`;
     try {
         const response = await axios(url, {
             method: "DELETE",
